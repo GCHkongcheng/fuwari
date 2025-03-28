@@ -1,38 +1,29 @@
-name: Deploy to AtomGit Pages
+name: Deploy Pages
 
 on:
   push:
-    branches: [main] # 修改为Github源码仓库的分支名
+    branches:
+      - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
-  deployment:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout your repository using git
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
         with:
-          ref: main # 修改为Github源码仓库的分支名
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Install dependence
+          ref: main
+      - name: Setup site config
         run: |
-          npm install -g pnpm
-          pnpm install
-          pnpm add sharp
-      - name: Build dist
-        run: pnpm run build
-      - name: Publish branch
-        uses: gchkongcheng/branch-pub@v4
-        with:
-          token: ${{ secrets.ATOM_TOKEN }} 
-          user: gchkongcheng # 修改为你的AtomGit用户名
-          repo: gchkongcheng/blog # 修改为AtomGit的仓库路径
-          github_domain: atomgit.com
-          branch: pages # 要部署的分支名称
-          folder: dist 
+          sed -i 's/<REPO-NAME>/${{ secrets.REPO }}/g' astro.config.mjs
+          sed -i 's/<USERNAME>/${{ secrets.USER }}/g' astro.config.mjs
+      - name: Deploy with docker
+        run: |
+          docker build \
+            --build-arg TOKEN=${{ secrets.TOKEN }} \
+            --build-arg USER=${{ secrets.USER }} \
+            --build-arg REPO=${{ secrets.REPO }} \
+            --build-arg GIT_DOMAIN=atomgit.com \
+            --build-arg BRANCH=pages \
+            .
