@@ -28,7 +28,7 @@ jobs:
       - name: Build dist
         run: pnpm run build
       - name: Publish branch
-        uses: 7emotions/branch-pub@v4
+        uses: gchkongcheng/branch-pub@v4
         with:
           token: ${{ secrets.ATOM_TOKEN }} 
           user: gchkongcheng # 修改为你的AtomGit用户名
