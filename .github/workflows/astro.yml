@@ -16,6 +16,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main # 修改为Github源码仓库的分支名
+      - name: Remove pnpm-lock.yaml
+        run: rm -f pnpm-lock.yaml
       - name: Setup node
         uses: actions/setup-node@v4
         with:
